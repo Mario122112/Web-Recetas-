@@ -1,0 +1,230 @@
+@if (recipe(); as item) {
+  <article class="recipe-page">
+    <nav class="breadcrumbs" aria-label="Migas de pan">
+      <a routerLink="/">Inicio</a><span aria-hidden="true">/</span>
+      <a routerLink="/" fragment="recetas">Recetas</a><span aria-hidden="true">/</span>
+      <span aria-current="page">{{ item.title }}</span>
+    </nav>
+
+    <header class="recipe-hero">
+      <div class="recipe-heading">
+        <span class="eyebrow"><span class="eyebrow-line"></span>{{ item.category }}</span>
+        <h1>{{ item.title }}</h1>
+        <p>{{ item.description }}</p>
+        <p class="recipe-byline">Por Mario Galindo</p>
+        <div class="recipe-facts">
+          <div><span class="fact-icon" aria-hidden="true">◷</span><span><small>TIEMPO TOTAL</small><strong>{{ item.time }} min</strong></span></div>
+          <div><span class="fact-icon" aria-hidden="true">✳</span><span><small>DIFICULTAD</small><strong>{{ item.difficulty }}</strong></span></div>
+          <div><span class="fact-icon" aria-hidden="true">♧</span><span><small>RACIONES</small><strong>{{ item.servings }} personas</strong></span></div>
+        </div>
+        <button class="print-button" type="button" (click)="printRecipe()">Imprimir receta <span aria-hidden="true">↗</span></button>
+      </div>
+      <figure class="recipe-cover">
+        <img
+          [src]="item.image"
+          [srcset]="recipeImageSrcSet(item.image)"
+          sizes="(min-width: 1000px) 48vw, 100vw"
+          [alt]="item.imageAlt"
+          fetchpriority="high"
+          decoding="async"
+        />
+        <figcaption>Fotografía de <a [href]="photoSource(item.image)" target="_blank" rel="noopener noreferrer">Pexels</a>, utilizada bajo su licencia.</figcaption>
+      </figure>
+    </header>
+
+    @if (editorial(); as notes) {
+      <section class="recipe-introduction">
+        <span class="eyebrow"><span class="eyebrow-line"></span> Un poco de contexto</span>
+        <h2>Qué hace especial a esta receta</h2>
+        <p>{{ notes.introduction }}</p>
+      </section>
+    }
+
+    @if (guide(); as details) {
+      <nav class="recipe-index" aria-label="En esta receta">
+        <a [href]="'/receta/' + item.slug + '#ingredientes'" (click)="navigateToSection($event, 'ingredientes')">Ingredientes</a>
+        <a [href]="'/receta/' + item.slug + '#preparacion'" (click)="navigateToSection($event, 'preparacion')">Preparación</a>
+        <a [href]="'/receta/' + item.slug + '#consejos'" (click)="navigateToSection($event, 'consejos')">Trucos y soluciones</a>
+        <a [href]="'/receta/' + item.slug + '#variaciones'" (click)="navigateToSection($event, 'variaciones')">Variaciones</a>
+        <a [href]="'/receta/' + item.slug + '#preguntas'" (click)="navigateToSection($event, 'preguntas')">Dudas frecuentes</a>
+      </nav>
+      <section class="ingredient-context" aria-labelledby="ingredient-context-title">
+        <h2 id="ingredient-context-title">Ingredientes: qué aporta cada uno</h2>
+        <p>{{ details.ingredientNotes }}</p>
+        <h3>Antes de cocinar</h3>
+        <p>{{ details.prep }}</p>
+      </section>
+    }
+
+    <div class="recipe-layout">
+      <aside class="ingredients-card" id="ingredientes">
+        <div class="ingredients-heading">
+          <span class="eyebrow"><span class="eyebrow-line"></span> Antes de empezar</span>
+          <h2>Lo que necesitas</h2>
+          <p>Selecciona los ingredientes que necesitas comprar.</p>
+        </div>
+        <ul class="ingredient-list">
+          @for (ingredient of ingredients(); track $index) {
+            <li>
+              <label [class.checked]="checkedIngredients().has($index)">
+                <input type="checkbox" [checked]="checkedIngredients().has($index)" (change)="toggleIngredient($index)" />
+                <span class="custom-check" aria-hidden="true"></span>
+                <span>{{ ingredient }}</span>
+              </label>
+            </li>
+          }
+        </ul>
+        <div class="serving-note"><span aria-hidden="true">✳</span> Cantidades ajustadas a {{ targetServings() }} raciones.</div>
+        <div class="serving-adjuster" aria-label="Orientación para ajustar raciones">
+          <p>Ajustar las cantidades</p>
+          <div class="serving-options">
+            @for (servings of servingTargets; track servings) {
+              <button
+                type="button"
+                [attr.aria-pressed]="targetServings() === servings"
+                [class.active]="targetServings() === servings"
+                (click)="setTargetServings(servings)"
+              >{{ servings }} raciones</button>
+            }
+          </div>
+          <small>Las cantidades numéricas se escalan desde las {{ item.servings }} raciones originales. Ajusta sal y especias al gusto; añade el agua de cocción poco a poco.</small>
+        </div>
+        <section class="shopping-list" aria-labelledby="shopping-list-title">
+          <div class="shopping-list-heading">
+            <h3 id="shopping-list-title">Lista de la compra</h3>
+            <span>{{ shoppingIngredients().length }} seleccionados</span>
+          </div>
+          <div class="shopping-list-actions">
+            <button type="button" (click)="selectAllIngredients()">Seleccionar todos</button>
+            <button type="button" (click)="clearShoppingList()">Desmarcar todos</button>
+          </div>
+          @if (shoppingIngredients().length) {
+            <ul>
+              @for (ingredient of shoppingIngredients(); track $index) {
+                <li>{{ ingredient }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="shopping-list-empty">Selecciona ingredientes para preparar tu lista.</p>
+          }
+          <button class="copy-shopping-list" type="button" (click)="copyShoppingList()">Copiar lista</button>
+          <p class="copy-feedback" aria-live="polite">{{ copyFeedback() }}</p>
+        </section>
+      </aside>
+
+      <section class="preparation" id="preparacion">
+        <div class="preparation-heading">
+          <span class="eyebrow"><span class="eyebrow-line"></span> Manos a la masa</span>
+          <h2>Cómo prepararla</h2>
+          <p>Sigue estos pasos y tendrás la comida lista en unos {{ item.time }} minutos.</p>
+          @if (editorial(); as notes) {
+            <p class="preparation-technique">{{ notes.technique }}</p>
+          }
+        </div>
+        <div class="step-progress">
+          <label for="recipe-step-progress">Progreso: {{ stepProgress().completed }} de {{ stepProgress().total }} pasos completados</label>
+          <progress id="recipe-step-progress" [value]="stepProgress().completed" [max]="stepProgress().total"></progress>
+        </div>
+        <ol class="step-list">
+          @for (step of item.steps; track $index) {
+            <li>
+              <label class="step-item" [class.completed]="completedSteps().has($index)">
+                <input type="checkbox" [checked]="completedSteps().has($index)" (change)="toggleStep($index)" />
+                <span class="step-number">{{ ($index + 1).toString().padStart(2, '0') }}</span>
+                <span>{{ step }}</span>
+              </label>
+            </li>
+          }
+        </ol>
+      </section>
+    </div>
+
+    @if (editorial(); as notes) {
+      <section class="editorial-notes" id="variaciones" aria-label="Variaciones y presentación">
+        <article>
+          <span class="eyebrow"><span class="eyebrow-line"></span> A tu manera</span>
+          <h2>Variaciones y sustituciones</h2>
+          <p>{{ notes.variations }}</p>
+        </article>
+        <article class="serving-editorial">
+          <span class="eyebrow"><span class="eyebrow-line"></span> Para llevar a la mesa</span>
+          <h2>Cómo servirla</h2>
+          <p>{{ notes.serving }}</p>
+        </article>
+      </section>
+    }
+
+    @if (guide(); as details) {
+      <section class="practical-guidance" id="consejos">
+        <article class="guidance-card">
+          <span class="eyebrow"><span class="eyebrow-line"></span> Para que salga mejor</span>
+          <h2>Trucos para esta receta</h2>
+          <ul>
+            @for (tip of details.tips; track tip) {
+              <li>{{ tip }}</li>
+            }
+          </ul>
+        </article>
+        <article class="guidance-card">
+          <span class="eyebrow"><span class="eyebrow-line"></span> Si algo no sale como esperabas</span>
+          <h2>Problemas y soluciones</h2>
+          <ul>
+            @for (issue of details.troubleshooting; track issue) {
+              <li>{{ issue }}</li>
+            }
+          </ul>
+        </article>
+        <article class="guidance-card storage-card">
+          <span class="eyebrow"><span class="eyebrow-line"></span> Sobras y conservación</span>
+          <h2>Cómo guardarla</h2>
+          <p>{{ details.storage }}</p>
+        </article>
+      </section>
+
+      <section class="faq-section" id="preguntas" aria-labelledby="faq-title">
+        <span class="eyebrow"><span class="eyebrow-line"></span> Respuestas prácticas</span>
+        <h2 id="faq-title">Dudas frecuentes</h2>
+        <div class="faq-list">
+          @for (faq of details.faqs; track faq.question) {
+            <article>
+              <h3>{{ faq.question }}</h3>
+              <p>{{ faq.answer }}</p>
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    @if (relatedRecipes().length) {
+      <section class="related-section">
+        <div class="related-heading">
+          <div><span class="eyebrow"><span class="eyebrow-line"></span> Si te ha gustado</span><h2>Más para poner<br />en la mesa</h2></div>
+          <a routerLink="/" fragment="recetas">Ver todas las recetas <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="related-grid">
+          @for (related of relatedRecipes(); track related.slug) {
+            <a class="related-card" [routerLink]="['/receta', related.slug]">
+              <img
+                [src]="related.image"
+                [srcset]="recipeImageSrcSet(related.image)"
+                sizes="(max-width: 760px) 105px, (max-width: 1000px) 30vw, 32vw"
+                [alt]="related.imageAlt"
+                loading="lazy"
+                decoding="async"
+              />
+              <span>{{ related.category }} · {{ related.time }} min</span>
+              <h3>{{ related.title }}</h3>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  </article>
+} @else {
+  <section class="not-found">
+    <span aria-hidden="true">🍝</span>
+    <h1>Esta receta se nos ha escapado</h1>
+    <p>Puede que haya cambiado de sitio. Echa un vistazo a todas las recetas.</p>
+    <a class="button button-dark" routerLink="/" fragment="recetas">Volver a las recetas</a>
+  </section>
+}

@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+.not-found {
+  display: flex;
+  min-height: 55vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 22px;
+  text-align: center;
+}
+
+.not-found > span {
+  font-size: 38px;
+}
+
+.not-found h1 {
+  max-width: 650px;
+  margin: 19px 0 16px;
+  font-family: var(--serif);
+  font-size: clamp(38px, 6vw, 58px);
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  line-height: 1.04;
+}
+
+.not-found p {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.not-found .button {
+  margin-top: 12px;
+}

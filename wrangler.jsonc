@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "macarrones-con-tomatico",
+  "compatibility_date": "2026-11-10",
+  "assets": {
+    "directory": "./dist/macarrones-con-tomatico/browser",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

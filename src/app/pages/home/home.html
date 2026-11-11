@@ -1,0 +1,133 @@
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="eyebrow-line"></span> Pasta, por favor</span>
+    <h1>La felicidad<br />se sirve <em>al dente.</em></h1>
+    <p>Un recetario de pasta para cocinar en casa con ingredientes corrientes, explicaciones claras y espacio para darles tu propio toque.</p>
+    <div class="hero-actions">
+      <a class="button button-dark" [routerLink]="['/receta', 'espaguetis-a-la-carbonara']">Ver receta destacada <span aria-hidden="true">↗</span></a>
+      <span class="hero-note"><span class="note-star" aria-hidden="true">✳</span> 36 recetas e ideas para la mesa</span>
+    </div>
+    <div class="hero-stamp" aria-hidden="true">
+      <span>HECHO CON</span>
+      <strong>mucho<br />tomatico</strong>
+      <span>Y UN POCO DE AMOR</span>
+    </div>
+  </div>
+  <div class="hero-image-wrap">
+    <img
+      class="hero-image"
+      src="https://images.pexels.com/photos/546945/pexels-photo-546945.jpeg?auto=compress&cs=tinysrgb&w=1200"
+      [srcset]="recipeImageSrcSet('https://images.pexels.com/photos/546945/pexels-photo-546945.jpeg?auto=compress&cs=tinysrgb&w=1200')"
+      sizes="(min-width: 1000px) 55vw, 100vw"
+      alt="Espaguetis a la carbonara con queso rallado"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <div class="photo-caption">
+      <span>DEL RECETARIO</span>
+      <strong>Espaguetis a la carbonara</strong>
+      <a href="https://www.pexels.com/photo/546945/" target="_blank" rel="noopener noreferrer">Fotografía de Pexels</a>
+    </div>
+    <div class="hero-image-mark" aria-hidden="true">buono<br />da morire</div>
+  </div>
+</section>
+
+<section class="welcome-strip" aria-label="Nuestra filosofía">
+  <span>BUENOS INGREDIENTES</span><i aria-hidden="true">✳</i>
+  <span>RECETAS SIN COMPLICACIONES</span><i aria-hidden="true">✳</i>
+  <span>MUCHA SALSA, SIEMPRE</span><i aria-hidden="true">✳</i>
+  <span>BUENOS INGREDIENTES</span>
+</section>
+
+<section class="recipes-section" id="recetas">
+  <div class="section-heading">
+    <div>
+      <span class="eyebrow"><span class="eyebrow-line"></span> La carta está servida</span>
+      <h2>¿Qué te apetece <em>hoy?</em></h2>
+    </div>
+    <p>Desde el clásico de domingo hasta esa pasta rápida que te salva el martes.</p>
+  </div>
+
+  <div class="recipe-controls" id="categorias">
+    <div class="category-list" aria-label="Filtrar por categoría">
+      @for (category of categories; track category) {
+        <button
+          type="button"
+          class="category-chip"
+          [class.active]="selectedCategory() === category"
+          [attr.aria-pressed]="selectedCategory() === category"
+          (click)="selectCategory(category)"
+        >{{ category }}</button>
+      }
+    </div>
+    <label class="search-box">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <span class="visually-hidden">Buscar recetas e ingredientes</span>
+      <input type="search" placeholder="Busca un plato o ingrediente..." (input)="setSearch($event)" />
+      <span class="search-hint">Buscar</span>
+    </label>
+  </div>
+
+  <p class="results-count" aria-live="polite">
+    {{ visibleRecipes().length }} {{ visibleRecipes().length === 1 ? 'receta' : 'recetas' }}
+    @if (selectedCategory() !== 'Todas') { <span>en {{ selectedCategory() }}</span> }
+  </p>
+
+  <div class="recipe-grid">
+    @for (recipe of visibleRecipes(); track recipe.slug; let index = $index) {
+      <article class="recipe-card" [class.feature-card]="index === 0 && selectedCategory() === 'Todas' && !searchTerm()">
+        <a class="recipe-image-link" [routerLink]="['/receta', recipe.slug]" [attr.aria-label]="'Ver receta: ' + recipe.title">
+          <img
+            [src]="recipe.image"
+            [srcset]="recipeImageSrcSet(recipe.image)"
+            sizes="(min-width: 1500px) 23vw, (min-width: 981px) 30vw, (min-width: 641px) 45vw, calc(100vw - 44px)"
+            [alt]="recipe.imageAlt"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="recipe-category">{{ recipe.category }}</span>
+          <span class="image-arrow" aria-hidden="true">↗</span>
+        </a>
+        <div class="recipe-card-body">
+          <div class="recipe-meta"><span>{{ recipe.time }} MIN</span><i aria-hidden="true">·</i><span>{{ recipe.difficulty }}</span></div>
+          <h3><a [routerLink]="['/receta', recipe.slug]">{{ recipe.title }}</a></h3>
+          <p>{{ recipe.description }}</p>
+          <a class="read-recipe" [routerLink]="['/receta', recipe.slug]">Ver receta <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    } @empty {
+      <div class="empty-state">
+        <span aria-hidden="true">🍝</span>
+        <h3>No encontramos esa receta</h3>
+        <p>Prueba con otro ingrediente, plato o categoría.</p>
+        <button type="button" class="button button-dark" (click)="searchTerm.set(''); selectCategory('Todas')">Ver todas las recetas</button>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="kitchen-guide" aria-labelledby="kitchen-guide-title">
+  <div class="guide-heading">
+    <span class="eyebrow"><span class="eyebrow-line"></span> El cuaderno de la cocina</span>
+    <h2 id="kitchen-guide-title">Pequeños gestos,<br /><em>mejor pasta.</em></h2>
+    <p>No hace falta complicarse. Un par de decisiones durante la cocción cambian la textura y hacen que la salsa se quede donde tiene que estar: en cada bocado.</p>
+  </div>
+  <div class="guide-articles">
+    <article>
+      <span class="guide-number">01</span>
+      <h3>Sala el agua y prueba antes de escurrir</h3>
+      <p>La pasta se sazona mientras se cuece, no al final en el plato. Añade sal cuando el agua hierva y prueba un minuto antes del tiempo del paquete: debe estar tierna, pero conservar una ligera resistencia en el centro. Si luego va al horno, escúrrela todavía algo más firme para que no se pase.</p>
+    </article>
+    <article>
+      <span class="guide-number">02</span>
+      <h3>Reserva el agua antes de colar</h3>
+      <p>Ese agua contiene almidón y ayuda a emulsionar el aceite, el queso o el jugo del tomate. Añádela poco a poco mientras mezclas la pasta con la salsa en la sartén; no se trata de convertirla en sopa, sino de conseguir una capa brillante que se adhiera. Por eso también conviene terminar la cocción junto a la salsa.</p>
+    </article>
+    <article>
+      <span class="guide-number">03</span>
+      <h3>Elige la forma según la salsa</h3>
+      <p>Las cintas largas, como linguine o tagliatelle, acompañan bien salsas lisas y ragús. Las formas cortas con estrías o huecos recogen trocitos y salsas con más textura. No es una regla rígida: si tienes otra pasta en la despensa, úsala y ajusta el tiempo a las indicaciones del paquete.</p>
+    </article>
+  </div>
+  <a class="guide-link" [routerLink]="['/receta', 'pesto-genoves-casero']">Pon estos consejos en práctica con el pesto genovés <span aria-hidden="true">↗</span></a>
+</section>

@@ -1,0 +1,26 @@
+<article class="info-page">
+  <nav class="breadcrumbs" aria-label="Migas de pan"><a routerLink="/">Inicio</a><span aria-hidden="true">/</span><span aria-current="page">{{ content().eyebrow }}</span></nav>
+  <header class="info-heading">
+    <span class="eyebrow"><span class="eyebrow-line"></span>{{ content().eyebrow }}</span>
+    <h1>{{ content().title }}</h1>
+    <p>{{ content().introduction }}</p>
+  </header>
+  <div class="info-sections">
+    @for (section of content().sections; track section.heading) {
+      <section>
+        <h2>{{ section.heading }}</h2>
+        @for (paragraph of section.paragraphs; track paragraph) {
+          <p>{{ paragraph }}</p>
+        }
+        @if (section.links?.length) {
+          <ul class="info-links">
+            @for (link of section.links; track link.url) {
+              <li><a [href]="link.url" [attr.target]="link.url.startsWith('https://') ? '_blank' : null" [attr.rel]="link.url.startsWith('https://') ? 'noopener noreferrer' : null">{{ link.label }}</a></li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  </div>
+  <a class="back-link" routerLink="/">← Volver a la página principal</a>
+</article>
