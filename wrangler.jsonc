@@ -5,6 +5,9 @@
   "assets": {
     "directory": "./dist/macarrones-con-tomatico/browser",
     "html_handling": "drop-trailing-slash",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    "observability": {
+    "enabled": false
+  }
   }
 }
