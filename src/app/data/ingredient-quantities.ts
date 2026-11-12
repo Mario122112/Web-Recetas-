@@ -36,13 +36,30 @@ function parseAmount(value: string): number {
   return Number(value.replace(',', '.'));
 }
 
-function formatAmount(value: number, countable: boolean): string {
-  const rounded = countable
-    ? Math.max(0.5, Math.round(value * 2) / 2)
-    : Math.round(value * 100) / 100;
+function formatAmount(value: number, countable: boolean, unit: string | null): string {
+  let rounded: number;
+  if (countable) {
+    rounded = Math.max(0.5, Math.round(value * 2) / 2);
+  } else if (unit === 'g') {
+    rounded = value < 1
+      ? Math.max(0.5, Math.round(value * 2) / 2)
+      : value < 10
+        ? Math.round(value)
+        : Math.round(value / 5) * 5;
+  } else if (unit === 'ml') {
+    rounded = value < 10
+      ? Math.round(value)
+      : Math.round(value / 5) * 5;
+  } else {
+    rounded = Math.round(value * 100) / 100;
+  }
 
   if (Number.isInteger(rounded)) {
     return String(rounded);
+  }
+
+  if (unit === 'g' && rounded === 0.5) {
+    return 'medio';
   }
 
   return rounded.toLocaleString('es-ES', { maximumFractionDigits: 2 });
@@ -116,12 +133,21 @@ export function scaleIngredient(ingredient: string, multiplier: number): string 
       : '';
     const description = `${tail} ${rangeTail}`;
     const scaledAmount = parseAmount(amountText) * multiplier;
+    const isSeasoning = SEASONING_PATTERN.test(description);
+    const isCountable = COUNTABLE_PATTERN.test(description);
+    const countableAmount = Math.max(0.5, Math.round(scaledAmount * 2) / 2);
+    const roundedAmount = isSeasoning
+      ? parseAmount(amountText)
+      : formatAmount(scaledAmount, isCountable, tail.match(MEASUREMENT_PATTERN)?.[1]?.toLocaleLowerCase('es-ES') ?? null);
+    const isHalfGram = !isSeasoning
+      && tail.match(MEASUREMENT_PATTERN)?.[1]?.toLocaleLowerCase('es-ES') === 'g'
+      && roundedAmount === 'medio';
 
     result += ingredient.slice(previousIndex, amountIndex);
-    result += SEASONING_PATTERN.test(description)
-      ? amountText
-      : formatAmount(scaledAmount, COUNTABLE_PATTERN.test(description));
-    result += adjustCountableNoun(tail, scaledAmount);
+    result += isSeasoning ? amountText : roundedAmount;
+    result += isHalfGram
+      ? tail.replace(MEASUREMENT_PATTERN, (unit) => unit.replace(/g$/i, 'gramo'))
+      : adjustCountableNoun(tail, isCountable ? countableAmount : scaledAmount);
     previousIndex = nextAmountIndex;
   });
 

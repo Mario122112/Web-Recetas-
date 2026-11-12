@@ -6,12 +6,20 @@ describe('ingredient quantity scaling', () => {
     expect(scaleIngredient('2 huevos y 1 yema', 2)).toBe('4 huevos y 2 yemas');
     expect(scaleIngredient('100 g de queso rallado', 0.5)).toBe('50 g de queso rallado');
     expect(scaleIngredient('1/2 cebolla', 2)).toBe('1 cebolla');
+    expect(scaleIngredient('1 huevo', 1.1)).toBe('1 huevo');
   });
 
   it('keeps seasoning quantities unchanged and scales quantities around ranges', () => {
     expect(scaleIngredient('1 cucharadita de sal', 2)).toBe('1 cucharadita de sal');
     expect(scaleIngredient('1-2 cucharaditas de pimienta', 2)).toBe('1-2 cucharaditas de pimienta');
     expect(scaleIngredient('1 cebolla y 2 dientes de ajo', 2)).toBe('2 cebollas y 4 dientes de ajo');
+  });
+
+  it('rounds scaled weights and volumes to practical amounts', () => {
+    expect(scaleIngredient('1 g de levadura', 0.5)).toBe('medio gramo de levadura');
+    expect(scaleIngredient('10 g de queso', 0.5)).toBe('5 g de queso');
+    expect(scaleIngredient('100 g de pasta', 0.333)).toBe('35 g de pasta');
+    expect(scaleIngredient('100 ml de leche', 0.333)).toBe('35 ml de leche');
   });
 
   it('leaves unmeasured ingredients and unsupported text intact', () => {

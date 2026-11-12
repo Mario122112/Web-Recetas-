@@ -15,7 +15,13 @@
         @if (section.links?.length) {
           <ul class="info-links">
             @for (link of section.links; track link.url) {
-              <li><a [href]="link.url" [attr.target]="link.url.startsWith('https://') ? '_blank' : null" [attr.rel]="link.url.startsWith('https://') ? 'noopener noreferrer' : null">{{ link.label }}</a></li>
+              <li>
+                @if (link.url.startsWith('/')) {
+                  <a [routerLink]="link.url">{{ link.label }}</a>
+                } @else {
+                  <a [href]="link.url" [attr.target]="link.url.startsWith('https://') ? '_blank' : null" [attr.rel]="link.url.startsWith('https://') ? 'noopener noreferrer' : null">{{ link.label }}</a>
+                }
+              </li>
             }
           </ul>
         }

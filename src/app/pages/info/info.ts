@@ -66,15 +66,9 @@ const CONTENT: Record<string, InfoContent> = {
       {
         heading: 'Correo electrónico',
         paragraphs: [
-          'El responsable editorial es Mario Galindo, con ubicación declarada en Murcia, España. Para consultas, contacta con el responsable.',
+          'El responsable editorial es Mario Galindo, con ubicación declarada en Murcia, España. Pulsa el enlace para abrir Gmail y redactar tu mensaje.',
         ],
-        links: [{ label: 'Contactar con el responsable', url: 'mailto:mariogalindoperez6@gmail.com' }],
-      },
-      {
-        heading: 'Consultas sobre privacidad',
-        paragraphs: [
-          'Para solicitudes relacionadas con datos personales o privacidad, incluye ese asunto en tu mensaje. No envíes información sensible que no sea necesaria.',
-        ],
+        links: [{ label: 'Enviar un correo', url: 'https://mail.google.com/mail/?view=cm&fs=1&to=mariogalindoperez6%40gmail.com' }],
       },
     ],
   },
