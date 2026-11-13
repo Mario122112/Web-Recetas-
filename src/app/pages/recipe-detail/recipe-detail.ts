@@ -8,7 +8,7 @@ import { Recipe } from '../../data/recipe.model';
 import { scaleIngredient } from '../../data/ingredient-quantities';
 import { RECIPE_EDITORIAL } from '../../data/recipe-editorial';
 import { RECIPE_GUIDES } from '../../data/recipe-guides';
-import { RECIPES, recipeImageSrcSet } from '../../data/recipes';
+import { RECIPES, recipeImageCreator, recipeImageSrcSet } from '../../data/recipes';
 import { SITE_ORIGIN, setCanonicalUrl } from '../../data/site-metadata';
 
 @Component({
@@ -27,6 +27,7 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
   private routeSubscription?: Subscription;
   protected readonly recipe = signal<Recipe | null>(null);
   protected readonly recipeImageSrcSet = recipeImageSrcSet;
+  protected readonly recipeImageCreator = recipeImageCreator;
   protected readonly checkedIngredients = signal(new Set<number>());
   protected readonly completedSteps = signal(new Set<number>());
   protected readonly targetServings = signal(0);
@@ -172,6 +173,7 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
     this.meta.updateTag({ name: 'twitter:image', content: recipe.image });
 
     this.removeRecipeSchema();
+    const imageCreator = recipeImageCreator(recipe.image);
     const script = this.document.createElement('script');
     script.id = 'recipe-jsonld';
     script.type = 'application/ld+json';
@@ -184,8 +186,15 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
           description: recipe.description,
           image: [{
             '@type': 'ImageObject',
+            url: recipe.image,
             contentUrl: recipe.image,
-            creditText: 'Pexels',
+            creator: {
+              '@type': 'Person',
+              name: imageCreator.name,
+              url: imageCreator.url,
+            },
+            copyrightNotice: `© ${imageCreator.name}`,
+            creditText: imageCreator.name,
             license: 'https://www.pexels.com/license/',
             acquireLicensePage: this.photoSource(recipe.image),
           }],
@@ -204,8 +213,10 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
           recipeIngredient: recipe.ingredients,
           recipeInstructions: recipe.steps.map((text, index) => ({
             '@type': 'HowToStep',
+            name: `Paso ${index + 1}`,
             position: index + 1,
             text,
+            url: `${canonicalUrl}#paso-${index + 1}`,
           })),
           author: {
             '@type': 'Person',

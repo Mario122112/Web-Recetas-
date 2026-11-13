@@ -3,6 +3,54 @@ import { Recipe } from './recipe.model';
 const pexelsPhoto = (id: string): string =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1200`;
 
+const PEXELS_PHOTO_CREATORS: Record<string, { name: string; url: string }> = {
+  '546945': { name: 'Maurijn Pach', url: 'https://www.pexels.com/@maurijn-pach-166875/' },
+  '31637793': { name: 'Gu Ko', url: 'https://www.pexels.com/@gu-ko-2150570603/' },
+  '39853054': { name: 'Jahra Tasfia Reza', url: 'https://www.pexels.com/@jahratreza/' },
+  '37180268': { name: 'Max Griss', url: 'https://www.pexels.com/@max-griss-16866522/' },
+  '30910495': { name: 'Valeria Boltneva', url: 'https://www.pexels.com/@valeriya/' },
+  '33312938': { name: 'Büşra Yurt', url: 'https://www.pexels.com/@busra-yurt-2148943872/' },
+  '806357': { name: 'Ronmar Lacamiento', url: 'https://www.pexels.com/@heyronmar/' },
+  '31637792': { name: 'Gu Ko', url: 'https://www.pexels.com/@gu-ko-2150570603/' },
+  '35123972': { name: 'Milton Das', url: 'https://www.pexels.com/@miltonphotography/' },
+  '4518890': { name: 'Polina Tankilevitch', url: 'https://www.pexels.com/@polina-tankilevitch/' },
+  '5531093': { name: 'Rachel Claire', url: 'https://www.pexels.com/@rachel-claire/' },
+  '37679127': { name: 'Aleyna Yetkin', url: 'https://www.pexels.com/@aleyna-yetkin-2161263848/' },
+  '4162492': { name: 'Daniele Sgura', url: 'https://www.pexels.com/@daniele-sgura-2571626/' },
+  '19805083': { name: 'mustafa türkeri', url: 'https://www.pexels.com/@farklimavi/' },
+  '5192430': { name: 'Maor Attias', url: 'https://www.pexels.com/@maorattias/' },
+  '11161425': { name: 'Shameel mukkath', url: 'https://www.pexels.com/@shameel-mukkath-3421394/' },
+  '29173118': { name: 'Kunal Lakhotia', url: 'https://www.pexels.com/@kunal-lakhotia-781256899/' },
+  '31094837': { name: 'pedro furtado', url: 'https://www.pexels.com/@pedrofurtadoo/' },
+  '28936956': { name: 'nikki awal', url: 'https://www.pexels.com/@nikki-awal-796695619/' },
+  '18367331': { name: 'Yusuf Kaya', url: 'https://www.pexels.com/@yusuf-kaya-288172498/' },
+  '17849248': { name: 'nikos apostolopoulos', url: 'https://www.pexels.com/@nikos-apostolopoulos-675017640/' },
+  '34326272': { name: 'Anhelina Vasylyk', url: 'https://www.pexels.com/@anhelina-vasylyk-734724285/' },
+  '31779545': { name: 'Adriano Bragi', url: 'https://www.pexels.com/@adriano-bragi-1288014591/' },
+  '16355469': { name: 'Ray Valdivia', url: 'https://www.pexels.com/@ray-valdivia-522594758/' },
+  '5419336': { name: 'Polina Tankilevitch', url: 'https://www.pexels.com/@polina-tankilevitch/' },
+  '11813473': { name: 'Mak_ jp', url: 'https://www.pexels.com/@mak_-jp-107017486/' },
+  '20051305': { name: 'Роман Нагаевский', url: 'https://www.pexels.com/@924587518/' },
+  '12015215': { name: 'Nadin Sh', url: 'https://www.pexels.com/@nadin-sh-78971847/' },
+  '33217199': { name: 'Natália Falsetti', url: 'https://www.pexels.com/@natalia-falsetti-431212036/' },
+  '12354402': { name: 'Ayrat', url: 'https://www.pexels.com/@ayrat-244411276/' },
+  '38731672': { name: 'Anya Dunes', url: 'https://www.pexels.com/@anya-dunes-2153945617/' },
+  '9399946': { name: 'Engin Akyurt', url: 'https://www.pexels.com/@enginakyurt/' },
+  '32083398': { name: 'Valeria Boltneva', url: 'https://www.pexels.com/@valeriya/' },
+  '38929037': { name: 'Ghey Lo', url: 'https://www.pexels.com/@caichel/' },
+  '16525900': { name: 'The Qurious Studio', url: 'https://www.pexels.com/@the-qurious-studio-537664004/' },
+  '4748540': { name: 'Regina Ferraz', url: 'https://www.pexels.com/@reginaferraz/' },
+};
+
+export function recipeImageCreator(imageUrl: string): { name: string; url: string } {
+  const photoId = new URL(imageUrl).pathname.match(/\/photos\/(\d+)\//)?.[1];
+  const creator = photoId ? PEXELS_PHOTO_CREATORS[photoId] : undefined;
+  if (!creator) {
+    throw new Error(`No hay una atribución de Pexels para la imagen: ${imageUrl}`);
+  }
+  return creator;
+}
+
 export const recipeImageSrcSet = (image: string): string => {
   const url = new URL(image);
   return [240, 360, 480, 800, 1200]

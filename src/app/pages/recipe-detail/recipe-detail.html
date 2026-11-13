@@ -28,7 +28,11 @@
           fetchpriority="high"
           decoding="async"
         />
-        <figcaption>Fotografía de <a [href]="photoSource(item.image)" target="_blank" rel="noopener noreferrer">Pexels</a>, utilizada bajo su licencia.</figcaption>
+        <figcaption>
+          Fotografía de
+          <a [href]="recipeImageCreator(item.image).url" target="_blank" rel="noopener noreferrer">{{ recipeImageCreator(item.image).name }}</a>
+          en <a [href]="photoSource(item.image)" target="_blank" rel="noopener noreferrer">Pexels</a>, utilizada bajo su licencia.
+        </figcaption>
       </figure>
     </header>
 
@@ -127,7 +131,7 @@
         </div>
         <ol class="step-list">
           @for (step of item.steps; track $index) {
-            <li>
+            <li [id]="'paso-' + ($index + 1)">
               <label class="step-item" [class.completed]="completedSteps().has($index)">
                 <input type="checkbox" [checked]="completedSteps().has($index)" (change)="toggleStep($index)" />
                 <span class="step-number">{{ ($index + 1).toString().padStart(2, '0') }}</span>
